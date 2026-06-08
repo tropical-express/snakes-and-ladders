@@ -1,4 +1,5 @@
 node_modules/
+releases/
 dist/
 pnpm-workspace.yaml
 .tar.xz

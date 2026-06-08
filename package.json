@@ -1,0 +1,36 @@
+{
+  "name": "snakes-and-ladders",
+  "version": "1.0.0",
+  "description": "Snakes and Ladders game built with Electron",
+  "main": "main.js",
+  "author": "Jacob Yee",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win msi",
+    "dist": "electron-builder --win msi"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.snakeslandadders.game",
+    "productName": "Snakes And Ladders",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "msi",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    }
+  }
+}

@@ -2,6 +2,9 @@
 
 A desktop implementation of the classic Snakes And Ladders board game built with Electron, HTML, CSS, and JavaScript.
 
+## Screenshots
+![Main Game Screen](screenshots/main.png) 
+
 ## Features
 
 * Classic Snakes And Ladders gameplay

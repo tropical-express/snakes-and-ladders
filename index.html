@@ -1,32 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Snakes & Ladders</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-  <h1>🐍 Snakes & Ladders</h1>
+  <div id="container">
 
-  <!-- Game board (REQUIRED) -->
-  <div id="board"></div>
+    <h1>🐍 Snakes & Ladders 🪜</h1>
 
-  <!-- Controls -->
-  <div id="panel">
-    <button onclick="rollDice()">Roll Dice</button>
+    <div id="gameArea">
 
-    <!-- Dice image (REQUIRED) -->
-    <div>
-      <img id="diceImg" src="assets/dice-1.png" width="70" />
+      <img
+        id="board"
+        src="assets/board.png"
+        alt="Snakes and Ladders Board"
+      >
+
+      <img
+        id="p1"
+        class="token"
+        src="assets/red.png"
+        alt="Player 1"
+      >
+
+      <img
+        id="p2"
+        class="token"
+        src="assets/blue.png"
+        alt="Player 2"
+      >
+
     </div>
 
-    <!-- Game log (REQUIRED) -->
-    <div id="log"></div>
+    <div id="controls">
+
+      <img
+        id="diceImg"
+        src="assets/dice-1.png"
+        alt="Dice"
+      >
+
+      <button id="rollBtn">
+        Roll Dice
+      </button>
+
+      <button
+        id="restartBtn"
+        style="display:none;"
+      >
+        Play Again
+      </button>
+
+    </div>
+
+    <div id="log">
+      Player 1 starts
+    </div>
+
   </div>
 
-  <!-- Load game script -->
   <script src="game.js"></script>
 
 </body>

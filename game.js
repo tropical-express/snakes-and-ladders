@@ -1,12 +1,25 @@
-const board = document.getElementById("board");
-const log = document.getElementById("log");
 const diceImg = document.getElementById("diceImg");
+const log = document.getElementById("log");
+const rollBtn = document.getElementById("rollBtn");
+const restartBtn = document.getElementById("restartBtn");
 
-// Snakes & ladders
+const positions = {};
+
 const jumps = {
-  3: 22, 5: 8, 11: 26, 20: 29,
-  27: 1, 21: 9, 17: 4, 19: 7,
-  52: 72, 57: 96, 60: 83,
+  3: 22,
+  5: 8,
+  11: 26,
+  20: 29,
+
+  17: 4,
+  19: 7,
+  21: 9,
+  27: 1,
+
+  52: 72,
+  57: 96,
+  60: 83,
+
   98: 78
 };
 
@@ -14,63 +27,57 @@ let p1 = 1;
 let p2 = 1;
 let turn = 1;
 let rolling = false;
+let gameOver = false;
 
-// build zig-zag board
-function createBoard() {
-  let nums = [];
-  let left = true;
+function generatePositions() {
 
-  for (let r = 0; r < 10; r++) {
-    let row = [];
-    for (let c = 0; c < 10; c++) {
-      row.push(r * 10 + c + 1);
+  const squareSize = 80;
+
+  for (let row = 0; row < 10; row++) {
+
+    for (let col = 0; col < 10; col++) {
+
+      let number;
+
+      if (row % 2 === 0) {
+        number = row * 10 + col + 1;
+      } else {
+        number = row * 10 + (9 - col) + 1;
+      }
+
+      positions[number] = {
+        x: col * squareSize + 24,
+        y: (9 - row) * squareSize + 24
+      };
     }
-    if (!left) row.reverse();
-    nums = nums.concat(row);
-    left = !left;
   }
-
-  nums.reverse();
-
-  nums.forEach(n => {
-    const cell = document.createElement("div");
-    cell.className = "cell";
-    cell.id = "cell-" + n;
-    cell.innerText = n;
-    board.appendChild(cell);
-  });
-
-  draw();
 }
 
-function draw() {
-  document.querySelectorAll(".token").forEach(t => t.remove());
+function drawPlayers() {
 
-  addToken(p1, "assets/red.png");
-  addToken(p2, "assets/blue.png");
+  const red = document.getElementById("p1");
+  const blue = document.getElementById("p2");
+
+  red.style.left = positions[p1].x + "px";
+  red.style.top = positions[p1].y + "px";
+
+  blue.style.left = positions[p2].x + 20 + "px";
+  blue.style.top = positions[p2].y + "px";
 }
 
-function addToken(pos, img) {
-  const cell = document.getElementById("cell-" + pos);
-
-  const token = document.createElement("img");
-  token.src = img;
-  token.className = "token";
-
-  cell.appendChild(token);
-}
-
-function setDice(n) {
-  diceImg.src = `assets/dice-${n}.png`;
+function setDice(number) {
+  diceImg.src = `assets/dice-${number}.png`;
 }
 
 function sleep(ms) {
-  return new Promise(r => setTimeout(r, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function move(player, steps) {
+async function animateMove(player, steps) {
+
   for (let i = 0; i < steps; i++) {
-    await sleep(120);
+
+    await sleep(150);
 
     if (player === 1) {
       p1 = Math.min(100, p1 + 1);
@@ -78,43 +85,90 @@ async function move(player, steps) {
       p2 = Math.min(100, p2 + 1);
     }
 
-    draw();
+    drawPlayers();
   }
 }
 
 async function rollDice() {
+
   if (rolling) return;
+  if (gameOver) return;
+
   rolling = true;
 
   const dice = Math.floor(Math.random() * 6) + 1;
+
   setDice(dice);
 
-  log.innerText = `Player ${turn} rolled ${dice}`;
+  log.textContent = `Player ${turn} rolled ${dice}`;
 
-  await move(turn, dice);
+  await animateMove(turn, dice);
 
-  let pos = turn === 1 ? p1 : p2;
+  let position = turn === 1 ? p1 : p2;
 
-  if (jumps[pos]) {
-    const old = pos;
-    pos = jumps[pos];
+  if (jumps[position]) {
 
-    log.innerText += ` → ${old} → ${pos}`;
+    const oldPosition = position;
+    position = jumps[position];
 
-    if (turn === 1) p1 = pos;
-    else p2 = pos;
+    if (position > oldPosition) {
+      log.textContent =
+        `Player ${turn} climbed a ladder! ${oldPosition} → ${position}`;
+    } else {
+      log.textContent =
+        `Player ${turn} slid down a snake! ${oldPosition} → ${position}`;
+    }
 
-    draw();
+    await sleep(500);
+
+    if (turn === 1) {
+      p1 = position;
+    } else {
+      p2 = position;
+    }
+
+    drawPlayers();
   }
 
-  if (pos === 100) {
-    log.innerText = `🎉 Player ${turn} wins!`;
+  if (position === 100) {
+
+    gameOver = true;
+
+    log.textContent = `🎉 Player ${turn} wins!`;
+
+    restartBtn.style.display = "inline-block";
+
     rolling = false;
     return;
   }
 
   turn = turn === 1 ? 2 : 1;
+
+  log.textContent += ` | Player ${turn}'s turn`;
+
   rolling = false;
 }
 
-createBoard();
+function restartGame() {
+
+  p1 = 1;
+  p2 = 1;
+  turn = 1;
+
+  rolling = false;
+  gameOver = false;
+
+  setDice(1);
+
+  drawPlayers();
+
+  restartBtn.style.display = "none";
+
+  log.textContent = "Player 1 starts";
+}
+
+rollBtn.addEventListener("click", rollDice);
+restartBtn.addEventListener("click", restartGame);
+
+generatePositions();
+drawPlayers();

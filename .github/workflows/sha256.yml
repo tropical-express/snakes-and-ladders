@@ -1,0 +1,42 @@
+name: Release
+
+on:
+push:
+tags:
+- "v*"
+
+permissions:
+contents: write
+
+jobs:
+release:
+runs-on: ubuntu-latest
+
+
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
+
+  - name: Create releases directory
+    run: mkdir -p releases
+
+  - name: Generate SHA256SUMS
+    run: |
+      cd releases
+
+      if ls *.exe *.msi *.zip *.tar.xz 1> /dev/null 2>&1; then
+        sha256sum *.exe *.msi *.zip *.tar.xz > SHA256SUMS
+      else
+        touch SHA256SUMS
+      fi
+
+  - name: Upload Release Assets
+    uses: softprops/action-gh-release@v2
+    with:
+      files: |
+        releases/*.exe
+        releases/*.msi
+        releases/*.zip
+        releases/*.tar.xz
+        releases/SHA256SUMS
+
